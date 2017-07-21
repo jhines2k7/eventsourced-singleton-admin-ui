@@ -30,6 +30,6 @@ cp index.html dist
 # change the src property of the script tag to bundle.js
 sed -i 's/dist\/bundle.js/bundle.js/g' dist/index.html
 
-docker build -t jhines2017/eventsourced-admin .
+docker build -t jhines2017/eventsourced-singleton-admin-ui .
 
 date; echo;
