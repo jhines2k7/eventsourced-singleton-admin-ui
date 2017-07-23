@@ -30,5 +30,3 @@ export default class EventStore {
         }
     }
 }
-
-module.exports = EventStore;

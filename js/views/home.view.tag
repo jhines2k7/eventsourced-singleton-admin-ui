@@ -290,7 +290,7 @@
         let eventStore = null;
 
         this.on('mount', () => {
-            eventStore = new EventStore();              
+            eventStore = new EventStore();            
         });
 
         subscribe(channel, topic) {
@@ -320,6 +320,9 @@
 
             return subscription;
         };
+
+        this.subscribe('routing', 'admin.update.currentView');
+        this.subscribe('routing', 'admin.update.home');
 
         this.on('updated', () => {
             var lineChart = document.getElementById('line-chart');
@@ -413,9 +416,6 @@
                     }
                 })
             })
-        })     
-            
-        this.subscribe('routing', 'admin.update.currentView');
-        this.subscribe('routing', 'admin.update.home');
+        })                 
     </script>
 </home> 

@@ -141,14 +141,69 @@
     </div>
 
     <script>
+        import postal from 'postal/lib/postal.lodash'
+        import reduce from '../reducer'
+        import EventStore from '../eventStore'
+
         this.viewModel = {
             profileLinksActive: false
         }
+
+        this.isMobileSideNavVisible = false
+
+        let eventStore;
+
+        subscribe(channel, topic) {
+            let subscription = postal.subscribe({
+                channel: channel,
+                topic: topic,
+                callback: function(data, envelope) {
+                    if(envelope.topic === 'admin.toggle.sideNav') {
+                        if(!this.isMobileSideNavVisible) {
+                            document.querySelector('aside.side-nav').style.display = 'block';
+                            document.querySelector('.wrapper').style.display = 'block';
+                        } else {
+                            document.querySelector('aside.side-nav').style.display = '';
+                            document.querySelector('.wrapper').style.display = '';
+                        }   
+
+                        this.isMobileSideNavVisible = !this.isMobileSideNavVisible;
+                        
+                    } else if(envelope.topic === 'admin.update.currentView'){
+                        let state = reduce(eventStore.events);
+                                        
+                        document.querySelectorAll('.main-menu ul li').forEach( (li) => {
+                            li.className = '';
+                        });
+
+                        if(state.currentView === 'home') {
+                            document.querySelector(".main-menu ul li a[href='#/']").parentElement.className = 'active';
+                        } else if(state.currentView === 'media') {
+                            document.querySelector(".main-menu ul li a[href='#/media']").parentElement.className = 'active';
+                        } else if(state.currentView === 'chat') {
+                            document.querySelector(".main-menu ul li a[href='#/chat']").parentElement.className = 'active';
+                        } else if(state.currentView === 'invoice') {
+                            document.querySelector(".main-menu ul li a[href='#/invoice']").parentElement.className = 'active';
+                        }
+                    }
+                }.bind(this)
+            });
+
+            return subscription;
+        };
+
+        this.on('mount', () => {
+            eventStore = new EventStore();
+        })
 
         toggleProfileLinks(e) {
             this.viewModel.profileLinksActive = !this.viewModel.profileLinksActive;
 
             this.update(this.viewModel);
         }
+
+        
+        this.subscribe('routing', 'admin.update.currentView');
+        this.subscribe('async', 'admin.toggle.sideNav');
     </script>    
 </side-nav>

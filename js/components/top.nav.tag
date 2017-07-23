@@ -1,7 +1,7 @@
 <top-nav>
     <div class="top-nav">
         <div class="top-nav-box">
-            <div class="side-nav-mobile"><i class="fa fa-bars"></i></div>
+            <div class="side-nav-mobile" onclick={ toggleSideNav }><i class="fa fa-bars"></i></div>
             <div class="logo-wrapper">
                 <div class="logo-box">
                     <img alt="pongo" src="assets/images/logo.png">
@@ -149,7 +149,7 @@
         let eventStore = null;
 
         this.on('mount', () => {
-            eventStore = new EventStore();              
+            eventStore = new EventStore();
         });
 
         toggleQuickLinks(e) {
@@ -162,6 +162,13 @@
             this.viewModel.profileLinksActive = !this.viewModel.profileLinksActive;
 
             this.update(this.viewModel);
+        }
+
+        toggleSideNav(e) {
+            eventStore.add(eventStore.events, [{
+                channel: 'async',
+                topic: 'admin.toggle.sideNav'
+            }]);
         }        
 
         subscribe(channel, topic) {

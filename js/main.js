@@ -16,196 +16,213 @@ import config from './config'
 import reduce from './reducer'
 
 let eventStore = null;
+let isLoggedIn = false;
+let currentView = '';
 
 let home = function() {
     'use strict';
-    
-    fetch(`http://${config.domain}:8282/home`).then( (response) => {
-        if(response.ok) {
-            return response.json();
-        }
 
-        throw new Error('There was an error while making the request.');
-    }).then( (data) => {
+    if(!isLoggedIn) {   
+        Router().setRoute('/login');
+    } else {
+        fetch(`http://${config.domain}:8282/home`).then( (response) => {
+            if(response.ok) {
+                return response.json();
+            }
+
+            throw new Error('There was an error while making the request.');
+        }).then( (data) => {
+            if(document.getElementsByTagName('top-nav').length === 0) {
+                document.body.appendChild(document.createElement('top-nav'));
+                riot.mount('top-nav');
+            }
+
+            document.body.appendChild(document.createElement('home'));
+            riot.mount('home');            
+            
+            eventStore.add(eventStore.events, [{
+                channel: 'routing',
+                topic: 'admin.update.currentView',
+                data: 'home'
+            },{
+                channel: 'async',
+                topic: 'admin.update.breadcrumbs',
+                data: {
+                    currentView: 'Home',
+                    subCategory: '',
+                    url: ''            
+                }
+            }, {
+                channel: 'async',
+                topic: 'admin.update.home',
+                data: data
+            }]);
+        }).catch( (error) => {
+            console.log(`ERROR: ${error.message}`);
+
+            eventStore.add(eventStore.events, [{
+                channel: 'async',
+                topic: 'admin.async.request.failure'
+            }]);
+        });
+    }    
+};
+
+let chat = function() {
+    'use strict';
+    
+    if(!isLoggedIn) {   
+        Router().setRoute('/login');
+    } else {
         if(document.getElementsByTagName('top-nav').length === 0) {
             document.body.appendChild(document.createElement('top-nav'));
             riot.mount('top-nav');
         }
 
-        document.body.appendChild(document.createElement('home'));
-        riot.mount('home');
-        
+        document.body.appendChild(document.createElement('chat'));
+        riot.mount('chat');        
+
         eventStore.add(eventStore.events, [{
             channel: 'routing',
             topic: 'admin.update.currentView',
-            data: 'home'
+            data: 'chat'
         },{
             channel: 'async',
             topic: 'admin.update.breadcrumbs',
             data: {
-                currentView: 'Home',
-                subCategory: '',
-                url: ''            
+                currentView: 'Chat',
+                subCategory: 'Communication',
+                url: '#/chat'            
             }
-        }, {
-            channel: 'async',
-            topic: 'admin.update.home',
-            data: data
         }]);
-    }).catch( (error) => {
-        console.log(`ERROR: ${error.message}`);
-
-        eventStore.add(eventStore.events, [{
-            channel: 'async',
-            topic: 'admin.async.request.failure'
-        }]);
-    });
-};
-
-let chat = function() {
-    'use strict';
-
-    if(document.getElementsByTagName('top-nav').length === 0) {
-        document.body.appendChild(document.createElement('top-nav'));
-        riot.mount('top-nav');
-    }
-
-    document.body.appendChild(document.createElement('chat'));
-    riot.mount('chat');    
-
-    eventStore.add(eventStore.events, [{
-        channel: 'routing',
-        topic: 'admin.update.currentView',
-        data: 'chat'
-    },{
-        channel: 'async',
-        topic: 'admin.update.breadcrumbs',
-        data: {
-            currentView: 'Chat',
-            subCategory: 'Communication',
-            url: '#/chat'            
-        }
-    }]);
+    }    
 }
 
 let media = function() {
     'use strict';
 
-    if(document.getElementsByTagName('top-nav').length === 0) {
-        document.body.appendChild(document.createElement('top-nav'));
-        riot.mount('top-nav');
-    }
-
-    document.body.appendChild(document.createElement('media'));
-    riot.mount('media');    
-
-    eventStore.add(eventStore.events, [{
-        channel: 'routing',
-        topic: 'admin.update.currentView',
-        data: 'media'
-    },{
-        channel: 'async',
-        topic: 'admin.update.breadcrumbs',
-        data: {
-            currentView: 'Images',
-            subCategory: 'Media',
-            url: '#/media'            
+    if(!isLoggedIn) {   
+        Router().setRoute('/login');
+    } else {
+        if(document.getElementsByTagName('top-nav').length === 0) {
+            document.body.appendChild(document.createElement('top-nav'));
+            riot.mount('top-nav');
         }
-    }]);
+
+        document.body.appendChild(document.createElement('media'));
+        riot.mount('media');  
+
+        eventStore.add(eventStore.events, [{
+            channel: 'routing',
+            topic: 'admin.update.currentView',
+            data: 'media'
+        },{
+            channel: 'async',
+            topic: 'admin.update.breadcrumbs',
+            data: {
+                currentView: 'Images',
+                subCategory: 'Media',
+                url: '#/media'            
+            }
+        }]);
+    }    
 }
 
 let invoice = function() {
     'use strict';
 
-    if(document.getElementsByTagName('top-nav').length === 0) {
-        document.body.appendChild(document.createElement('top-nav'));
-        riot.mount('top-nav');
-    }
-
-    document.body.appendChild(document.createElement('invoice'));
-    riot.mount('invoice');    
-
-    eventStore.add(eventStore.events, [{
-        channel: 'routing',
-        topic: 'admin.update.currentView',
-        data: 'invoice'
-    },{
-        channel: 'async',
-        topic: 'admin.update.breadcrumbs',
-        data: {
-            currentView: 'Invoice',
-            subCategory: 'Billing',
-            url: '#/invoice'            
+    if(!isLoggedIn) {   
+        Router().setRoute('/login');
+    } else {
+        if(document.getElementsByTagName('top-nav').length === 0) {
+            document.body.appendChild(document.createElement('top-nav'));
+            riot.mount('top-nav');
         }
-    }]);
+
+        document.body.appendChild(document.createElement('invoice'));
+        riot.mount('invoice');            
+
+        eventStore.add(eventStore.events, [{
+            channel: 'routing',
+            topic: 'admin.update.currentView',
+            data: 'invoice'
+        },{
+            channel: 'async',
+            topic: 'admin.update.breadcrumbs',
+            data: {
+                currentView: 'Invoice',
+                subCategory: 'Billing',
+                url: '#/invoice'            
+            }
+        }]);
+    }    
 }
 
 let login = function() {
     'use strict';
 
-    if(document.getElementsByTagName('login').length === 0) {
-        document.body.appendChild(document.createElement('login'));
-        riot.mount('login');
-    }
+    if(isLoggedIn) {
+        Router().setRoute('/');
+    } else {
+        if(document.getElementsByTagName('login').length === 0) {
+            document.body.appendChild(document.createElement('login'));
+            riot.mount('login');
+        }
 
-    eventStore.add(eventStore.events, [{
-        channel: 'routing',
-        topic: 'admin.update.currentView',
-        data: 'login'
-    }]);
+        eventStore.add(eventStore.events, [{
+            channel: 'routing',
+            topic: 'admin.update.currentView',
+            data: 'login'
+        }]);
+    }
+    
 }
 
 let logout = function() {
     'use strict';
 
-    eventStore.add(eventStore.events, [{
-        channel: 'async',
-        topic: 'admin.signout.success',
-        data: {
-            name: '',
-            isLoggedIn: false,
-            role: ''
-        }
-    }]);
+    if(isLoggedIn) {
+        Router().setRoute('/');
+    } else {
+        eventStore.add(eventStore.events, [{
+            channel: 'async',
+            topic: 'admin.signout.success',
+            data: {
+                name: '',
+                role: '',
+                isLoggedIn: false,
+                location: '',
+                imageUrl: '',
+                email: ''
+            }
+        }]);
 
-    Router().init().setRoute('/login');        
+        Router().setRoute('/login');
+    }
+            
 }
 
-let allRoutes = function() {
-    document.querySelectorAll('.main-menu ul li').forEach( (li) => {
-        li.className = '';
-    });
-    
+let checkLoginStatus = function() {
     let state = reduce(eventStore.events);
 
-    if(!state.user.isLoggedIn) {
-        Router().init().setRoute('/login');
-    } else {
-        if(state.currentView === 'media') {
-            document.querySelector(".main-menu ul li a[href='#/media']").parentElement.className = 'active';
-        } else if(state.currentView === 'chat') {
-            document.querySelector(".main-menu ul li a[href='#/chat']").parentElement.className = 'active';
-        } else if(state.currentView === 'invoice') {
-            document.querySelector(".main-menu ul li a[href='#/invoice']").parentElement.className = 'active';
-        }
-    }    
+    isLoggedIn = state.user.isLoggedIn;    
 }
-
-let router = Router({
-    '/': home,
-    '/chat': chat,
-    '/media': media,
-    '/invoice': invoice,    
-    '/login': login,
-    '/logout': logout
-});
-
-router.configure({
-    on: allRoutes
-});
 
 Storage.get().then( (events) => {
     eventStore = new EventStore(events);
+
+    let router = Router({
+        '/': home,
+        '/chat': chat,
+        '/media': media,
+        '/invoice': invoice,    
+        '/login': login,
+        '/logout': logout
+    });
+
+    router.configure({
+        before: checkLoginStatus
+    });
 
     router.init();
 });

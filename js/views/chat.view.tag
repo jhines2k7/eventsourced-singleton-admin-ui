@@ -360,7 +360,7 @@
         let eventStore = null;
 
         this.on('mount', () => {
-            eventStore = new EventStore();              
+            eventStore = new EventStore();
         });
 
         subscribe(channel, topic) {

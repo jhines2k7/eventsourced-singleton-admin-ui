@@ -37,7 +37,7 @@
         let eventStore = null;
 
         this.on('mount', () => {
-            eventStore = new EventStore();              
+            eventStore = new EventStore();
         });
 
         subscribe(channel, topic) {
@@ -56,6 +56,8 @@
 
             return subscription;
         };
+
+        this.subscribe('routing', 'admin.update.currentView');             
 
         doLogin(e) {
             e.preventDefault();
@@ -83,7 +85,7 @@
                     }
                 }]);
 
-                Router().init().setRoute('/');
+                Router().setRoute('/');
             }).catch( (error) => {
                 console.log(`ERROR: ${error.message}`);
 
@@ -92,8 +94,6 @@
                     topic: 'admin.async.request.failure'
                 }]);
             });            
-        }
-
-        this.subscribe('routing', 'admin.update.currentView');
+        }        
     </script>
 </login>
