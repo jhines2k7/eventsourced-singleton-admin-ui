@@ -21,7 +21,7 @@ export default class EventStore {
 
         Storage.set(allEvents);
 
-        this.events = events.concat(newEvents);
+        this.events = allEvents;
 
         for(let event in newEvents) {
             if(newEvents.hasOwnProperty(event)) {
